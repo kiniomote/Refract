@@ -19,76 +19,94 @@ namespace TRPO_Lab_4
 
 		// 1) -------------------------------------------------------
 
-		private void set_mod(bool mod)
+		private void SetMod(bool mod)
 		{
-			if (mod == true)
-			{
-				label1.Enabled = true;
-				button1.Enabled = true;
-				button2.Enabled = true;
-				button3.Enabled = false;
-				button4.Enabled = false;
-			}
-			else
-			{
-				label1.Enabled = false;
-				button1.Enabled = false;
-				button2.Enabled = false;
-				button3.Enabled = true;
-				button4.Enabled = true;
-			}
+			if (mod) ActivateInterface1();
+			else ActivateInterface2();
+		}
+
+		private void ActivateInterface1()
+		{
+			NamePersonLabel.Enabled = true;
+			BackButton.Enabled = true;
+			EnterButton.Enabled = true;
+			LeftButton.Enabled = false;
+			RightButton.Enabled = false;
+		}
+
+		private void ActivateInterface2()
+		{
+			NamePersonLabel.Enabled = false;
+			BackButton.Enabled = false;
+			EnterButton.Enabled = false;
+			LeftButton.Enabled = true;
+			RightButton.Enabled = true;
 		}
 
 		// 2) -------------------------------------------------------
 
-		private StatusName Function2(Driver driver)
+		private string Function2(Driver driver)
 		{
-			switch (driver.Status)
-			{
-				case ClientStatus.Unknown:
-					return m_driverStatusNames[ClientStatus.Unknown];
-				case ClientStatus.Free:
-					return m_driverStatusNames[ClientStatus.Free];
-				case ClientStatus.Busy:
-					return m_driverStatusNames[ClientStatus.Busy];
-				case ClientStatus.InWay:
-					return m_driverStatusNames[ClientStatus.InWay];
-				case ClientStatus.Work:
-					return m_driverStatusNames[ClientStatus.Work];
-				case ClientStatus.Break:
-					return m_driverStatusNames[ClientStatus.Break];
-				case ClientStatus.Alarm:
-					return m_driverStatusNames[ClientStatus.Alarm];
-			}
+			return m_driverStatusNames[driver.Status];
 		}
 
 		// 3) -------------------------------------------------------
 
+		const int CHECK_LENGTH = 1;
+
 		private void Function3()
 		{
-			uint i;
+			uint number;
 
-			if (i.ToString().Length == 1)
+			//...
+
+			if (CheckNumber(number))
 			{
+				//...
 			}
+		}
+
+		private bool CheckNumber(uint number)
+		{
+			if (number.ToString().Length == CHECK_LENGTH) return true;
+			else return false;
 		}
 
 		// 4) -------------------------------------------------------
 
+		const int COUNT_DESTINATION_SOURCE = 13;
+
 		private void Function4()
 		{
+			//...
+			string destination = SetDestination(sources);
+			//...
+		}
+
+		private string SetDestination(string[] sources)
+		{
 			string destination = null;
-			for (int i = 0; i < 13; i++)
-				destination += source[i];
+
+			for (int i = 0; i < COUNT_DESTINATION_SOURCE; i++)
+			{
+				destination += sources[i];
+			}
+
+			return destination;
 		}
 
 		// 5) -------------------------------------------------------
 
-		private bool IsNumber(string str)
+		private bool IsNumber(string telephone_number)
 		{
-			return (str.Replace("0", "").Replace("0", "").Replace("0", "").Replace("0", "")
-				.Replace("0", "").Replace("0", "").Replace("0", "").Replace("0", "")
-				.Replace("0", "").Replace("0", "").Length == 0);
+			for (int number = 0; number < 10; number++)
+			{
+				telephone_number.Replace(number.ToString(), "");
+			}
+
+			if (telephone_number.Length == 0)
+				return true;
+			else return false;
 		}
 
 		// 6) -------------------------------------------------------
@@ -98,54 +116,53 @@ namespace TRPO_Lab_4
 			foreach (Direcoryinfo dir in dirs.GetDirectories())
 			{
 				//create folder{16}
-				stream.Write(new byte[] { (byte)NetworkMessage.MakeDir }, 0, 1);
-				stream.Read(new byte[1], 0, 1);
+				stream.Write(new byte[] 
+				{
+					(byte)NetworkMessage.MakeDir }, 0, 1
+				);
 
-				stream.Write(BitConverter.GetBytes(Encoding.UTF8.GetBytes(
-					SubFolder.Replace('\\', '/')) + dir.Name.Replace('\\'.'/').Length), 0, 4);
+				StreamRead(stream);
 
-				stream.Write(Encoding.UTF8.GetBytes(SubFolder.Replace('\\', '/') +
-					dir.Name.Replace('\\', '/')), 0,
-					Encoding.UTF8.GetBytes(SubFolder.Replace('\\', '/') +
-					dir.Name.Replace('\\', '/')).Length);
+				byte[] encod = Encod(SubFolder, dir.Name);
+
+				stream.Write(BitConverter.GetBytes(encod.Length), 0, 4);
+
+				stream.Write(encod, 0, encod.Length);
 				//send folder name
 
-				stream.Read(new byte[1], 0, 1); // OK
+				StreamRead(stream); // OK
 			}
+		}
+
+		private string FolderStyle(string folder)
+		{
+			return folder.Replace('\\', '/');
+		}
+
+		private byte[] Encod(string sub_folder, string dir_name)
+		{
+			return Encoding.UTF8.GetBytes(FolderStyle(sub_folder) + FolderStyle(dir_name));
+		}
+
+		private void StreamRead(Stream stream)
+		{
+			stream.Read(new byte[1], 0, 1);
 		}
 
 		// 7) -------------------------------------------------------
 
+		List<string> DAYS = new List<string>
+		{
+			"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"
+		};
+
 		private void Function7()
 		{
-			string[] days = new String[7];
-			for (int i = 0; i < 7; i++)
+			string[] days = new string[DAYS.Count];
+
+			for (int i = 0; i < DAYS.Count; i++)
 			{
-				switch (i)
-				{
-					default:
-					case 0:
-						days[i] = "Monday";
-						break;
-					case 1:
-						days[i] = "Tuesday";
-						break;
-					case 2:
-						days[i] = "Wednesday";
-						break;
-					case 3:
-						days[i] = "Thursday";
-						break;
-					case 4:
-						days[i] = "Friday";
-						break;
-					case 5:
-						days[i] = "Saturday";
-						break;
-					case 6:
-						days[i] = "Sunday";
-						break;
-				}
+				days[i] = DAYS[i];
 			}
 		}
 
@@ -153,18 +170,37 @@ namespace TRPO_Lab_4
 
 		private void Function8()
 		{
-			DateTime dt = DateTime.Now;
-			string h = dt.Hour.ToString().PadLeft(2, '0');
-			string m = dt.Minute.ToString().PadLeft(2, '0');
-			string s = dt.Second.ToString().PadLeft(2, '0');
-			Console.WriteLine("--" + h + ":" + m + ":" + s + "--");
+			DateTime currentDateTime = DateTime.Now;
+
+			ShowTime(currentDateTime);
+		}
+
+		private void ShowTime(DateTime dateTime)
+		{
+			string hour = dateTime.Hour.ToString().PadLeft(2, '0');
+			string minute = dateTime.Minute.ToString().PadLeft(2, '0');
+			string second = dateTime.Second.ToString().PadLeft(2, '0');
+
+			Console.WriteLine("--" + hour + ":" + minute + ":" + second + "--");
 		}
 
 		// 9) -------------------------------------------------------
 
 		private void Function9()
 		{
-			return ((int)(Counter / 2) != Counter / 2.00 && Counter != 0);
+			return CheckNumberMultipleToNumber(Counter, 2);
+		}
+
+		private bool CheckNumberMultipleToNumber(double number, int divider)
+		{
+			bool multiple;
+
+			if ((int)(number / divider) != number / divider && number != 0)
+				multiple = false;
+			else
+				multiple = true;
+
+			return multiple;
 		}
 
 		// 10) -------------------------------------------------------
@@ -174,10 +210,9 @@ namespace TRPO_Lab_4
 			if (Connected == 0)
 			{
 				rez = setup();
-				fl_end = true; // выход
 			}
-			else
-				fl_end = true;
+
+			fl_end = true;
 		}
 
 		// 11) -------------------------------------------------------
@@ -187,14 +222,12 @@ namespace TRPO_Lab_4
 			List<int> arr = new List<int>();
 			List<int> tmpArr = new List<int>();
 
-			for (int i = 0; i < arr.Count; i++)
+			foreach (int number in arr)
 			{
-				if (arr[i] > 100)
-				{
-				}
-				else
-					tmpArr.Add(arr[i]);
+				if (number <= 100)
+					tmpArr.Add(number);
 			}
+
 			arr = tmpArr;
 		}
 
@@ -204,194 +237,201 @@ namespace TRPO_Lab_4
 		{
 			var ids = form.Keys;
 
-			if (ids.Length == 0 || ds.Length > 1) { throw Exception; }
+			if (CheckKeySingle(ids.Length)) { throw Exception; }
+		}
+
+		private bool CheckKeySingle(int length)
+		{
+			if (length == 0 || length > 1)
+				return true;
+			else return false;
 		}
 
 		// 13) -------------------------------------------------------
 
 		private void Function13()
 		{
-			string[] nameParts = customer.Name.Split(' ');
+			string firstName = GetNamePart(customer.Name, 0);
+			string lastName = GetWithoutPartNamePart(customer.Name, firstName, " ");
+		}
 
-			string firstName = nameParts[0];
-			string lastName = customer.Name.Replace(nameParts[0], "").TrimStart(' ');
+		private string GetNamePart(string name, int number_part)
+		{
+			string part = "";
+
+			string[] nameParts = name.Split(' ');
+			part = nameParts[number_part];
+
+			return part;
+		}
+
+		private string GetWithoutPartNamePart(string name, string part_name, string split)
+		{
+			string part = "";
+
+			part = name.Replace(part_name + split, "");
+
+			return part;
 		}
 
 		// 14) -------------------------------------------------------
 
 		private void Function14()
 		{
-			foreach (string id in sourcelDs.Split(new char[] { ',' },
-			StringSplitOptions.RemoveEmptyEntries))
+			sourceId = FindId(sourceIds, 0);
+		}
+
+		private int FindId(string sourceIds, int number_id)
+		{
+			string[] Ids = sourcelDs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+			int i = 0;
+			foreach (string id in Ids)
 			{
-				sourceId = Convert.ToInt32(id);
-				break;
+				if (i == number_id)
+					return Convert.ToInt32(id);
+				else i++;
 			}
+
+			return 0;
 		}
 
 		// 15) -------------------------------------------------------
 
-		public string generateEMail()
+		const string NAME_DOMAIN = "@domain.ua";
+
+		public string GenerateEMail()
 		{
-			string res;
-			int i = PersonName.IndexOf(" ");
-			char[] str1 = new char[i];
-			PersonName.CopyTo(0, str1, 0, i);
-			string str11 = new string(str1);
-			char[] str2 = new char[PersonName.Length - i - 1];
-			PersonName.CopyTo(i + 1, str2, 0, PersonName.Length - i - 1);
-			string str22 = new string(str2);
-			res = str11.ToString() + "." + str22.ToString();
-			if (res.Length > 20)
-			{
-				str1 = new char[20];
-				res.CopyTo(0, str1, 0, 20);
-				res = new string(str1);
-			}
-			res += "@domain.ua";
-			return res;
+			string nameEMail = PersonName.Replace(" ", ".");
+
+			int length = 0;
+			if (nameEMail.Length > 20)
+				length = 20;
+			else
+				length = nameEMail.Length;
+
+			char[] nameShort = null;
+
+			nameEMail.CopyTo(0, nameShort, 0, length);
+
+			string fullNameEmail = "";
+			fullNameEmail += nameShort + NAME_DOMAIN;
+
+			return fullNameEmail;
 		}
 
 		// 16) -------------------------------------------------------
 
 		private void Function16()
 		{
-			foreach (string id in sourceIDs.Split(new char[] { ',' },
-					StringSplitOptions.RemoveEmptyEntries))
+			sourceId = FindId(sourceIds, 0);
+		}
+
+		private int FindId(string sourceIds, int number_id)
+		{
+			string[] Ids = sourcelDs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+			int i = 0;
+			foreach (string id in Ids)
 			{
-				sourceId = Convert.ToInt32(id);
-				break;
+				if (i == number_id)
+					return Convert.ToInt32(id);
+				else i++;
 			}
+
+			return 0;
 		}
 
 		// 17) -------------------------------------------------------
 
 		private string GetTextDiv2(string text)
 		{
-			int mid = text.Length / 2;
-			int r = text.IndexOf(" ", mid); if (r < 0) r = 5000;
-			int l = text.IndexOf(" ", 0, mid); if (l < 0) l = 5000;
+			int midText = text.Length / 2;
 
-			if (r - mid > mid - 1)
-				mid = 1;
-			else mid = r;
+			midText = IndexSpace(text, midText);
 
-			if (mid == 5000) return "&ndsp" + text;
-			return "&ndsp" + text.Substring(0, mid) + " <br/>&nbsp" +
-				text.Substring(mid, text.Length - mid);
+			if (midText == text.Length) return "&ndsp" + text;
+			return "&ndsp" + text.Substring(0, midText) + " <br/>&nbsp" +
+				text.Substring(midText, text.Length - midText);
+		}
+
+		private int IndexSpace(string text, int midText)
+		{
+			int rightSpace = text.IndexOf(" ", midText);
+			if (rightSpace < 0) rightSpace = text.Length;
+
+			int leftSpace = text.IndexOf(" ", 0, midText);
+			if (leftSpace < 0) leftSpace = text.Length;
+
+			int distanceBetweenRightAndMid = rightSpace - midText;
+			int distanceBetweenLeftAndMid = midText - leftSpace;
+
+			if (distanceBetweenRightAndMid > distanceBetweenLeftAndMid)
+				return leftSpace;
+			else return rightSpace;
 		}
 
 		// 18) -------------------------------------------------------
 
-		private static readonly char SPECIFER = "$"[0];
-		private static readonly char DELIMITER = ":"[0];
-		private static readonly char[] DELIMITER_ARRAY = new char[1] { DELIMITER };
+		private static readonly char SPECIFER = '$';
+		private static readonly char DELIMITER = ':';
+		private static readonly char[] DELIMITER_ARRAY = new char[] { DELIMITER };
 
 		// 19) -------------------------------------------------------
 
-		string mailTo = ((Config.GetSetting("AdminNotifications_EmailAddress") == null) ||
-			(Config.GetSetting("AdminNotifications_EmailAddress").Length <= 0)) ?
-			Globals.GetHostPortalSettings().HostSettings["SMTTPPassword"].ToString() :
-			Config.GetSetting("AdminNotifications_EmailAddress");
+		private const string ADMIN_EMAIL = "AdminNotifications_EmailAddress";
+
+		private void Function19()
+		{
+			string answer = "";
+
+			if ((Config.GetSetting(ADMIN_EMAIL) == null) || (Config.GetSetting(ADMIN_EMAIL).Length <= 0))
+				answer = Globals.GetHostPortalSettings().HostSettings["SMTTPPassword"].ToString();
+			else
+				answer = Config.GetSetting(ADMIN_EMAIL);
+
+			string mailTo = answer;
+		}
 
 		// 20) -------------------------------------------------------
 
+		List<string> DIRECTORYES = new List<string>
+		{
+			"SCLAD", "REAL", "DOSTAVKA"
+		};
+
+		List<string> FILES = new List<string>
+		{
+			"analit.dbf", "partner.dbf", "SCLAD\\mdoc.dbf",
+			"SCLAD\\mdoc.fpt", "SCLAD\\mdocm.dbf",
+			"SCLAD\\mgrup.dbf", "SCLAD\\mlabel.dbf",
+			"SCLAD\\mlabel.fpt", "REAL\\rbookm.dbf",
+			"REAL\\rbook.dbf", "REAL\\rbook.fpt",
+			"DOSTAVKA\\avt.dbf", "DOSTAVKA\\avtm.dbf",
+			"DOSTAVKA\\avtm.fpt", "DOSTAVKA\\cargo.dbf",
+			"DOSTAVKA\\cargom.dbf", "DOSTAVKA\\zamena.dbf"
+		};
+
 		public bool CheckPath(string path)
 		{
-			int n;
+			int n = 0;
 
-			n = 0;
+			foreach (string directory in DIRECTORYES)
+			{
+				if (Directory.Exists(path + directory))
+					n += 1;
+			}
+
+			foreach (string file in FILES)
+			{
+				if (File.Exists(path + file))
+					n += 1;
+			}
 			
-			//
-			if (Directory.Exists(path + "SCLAD"))
-			{
-				n += 1;
-			}
-			if (Directory.Exists(path + "REAL"))
-			{
-				n += 1;
-			}
-			if (Directory.Exists(path + "DOSTAVKA"))
-			{
-				n += 1;
-			}
-
-			//
-			if (File.Exists(path + "analit.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "partner.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "SCLAD\\mdoc.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "SCLAD\\mdoc.fpt"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "SCLAD\\mdocm.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "SCLAD\\mgrup.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "SCLAD\\mlabel.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "SCLAD\\mlabel.fpt"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "REAL\\rbookm.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "REAL\\rbook.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "REAL\\rbook.fpt"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "DOSTAVKA\\avt.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "DOSTAVKA\\avtm.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "DOSTAVKA\\avtm.fpt"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "DOSTAVKA\\cargo.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "DOSTAVKA\\cargom.dbf"))
-			{
-				n += 1;
-			}
-			if (File.Exists(path + "DOSTAVKA\\zamena.dbf"))
-			{
-				n += 1;
-			}
-
-			if (n = 20)
-			{
+			if (n == DIRECTORYES.Count + FILES.Count)
 				return true;
-			}
-
-			return false;
+			else
+				return false;
 		}
 
 		// 21) -------------------------------------------------------
@@ -399,30 +439,26 @@ namespace TRPO_Lab_4
 		private void Function21()
 		{
 			txtContracts.Text = "";
-			bool first = true;
 
 			foreach (string contact in contacts)
 			{
-				if (first != true)
-					txtContacts.Text += ";";
-				first = false;
-
-				txtContacts.Text += contact;
+				txtContacts.Text += AddToTextSplit(txtContacts.Text,";") + contact;
 			}
+		}
+
+		private string AddToTextSplit(string text,string split)
+		{
+			if (text.Length != 0)
+				return split;
+			else
+				return "";
 		}
 
 		// 22) -------------------------------------------------------
 
 		private void Function22()
 		{
-			if (Game1.clou == true)
-			{
-				Game1.clou = false;
-			}
-			else
-			{
-				Game1.clou = true;
-			}
+			Game1.clou = !Game1.clou;
 		}
 	}
 }
